@@ -1,71 +1,110 @@
-# Stage 2/4: Add & config
+# Stage 3/4: Log & commit
 ## Description
-In this stage, your program should allow a user to set their name and add the files they want to track. Store a username in <i>config.txt</i>.
+In this stage, you should implement two commands. `Commit` will allow a user to save file changes; `log` will allow viewing the commit history.
 
-Index.txt stores the files that were added to the index. Don't forget to store all the files of the version control system in the vcs directory. You should create this directory programmatically. It may look something like this:
-```
-.
-├── vcs
-│   ├── config.txt
-│   └── index.txt
-├── tracked_file.txt
-└── untracked_file.txt
-```
+Git may seem quite complicated. If you want to learn more, watch the <a href="https://www.youtube.com/watch?v=P6jD966jzlk">video explanation</a> by GitLab.
+
+The purpose of this project is to work with files. Store different file versions in the index according to the commits and make sure that each commit has a unique ID. ID should allow you to find a specific file version that matches this commit. You need to think about the concept of a commit ID.
+
+You can store commits inside <i>vsc/commits</i>. Each commit will be saved to a separate directory. These directories will include a commit's ID and additional information that you can store in <i>vsc/log.txt</i>.
+
+You will also need to find out whether a file has been changed since the last commit. For that, you need to calculate the hash of the current file and the hash of the last commit. If these values are different, then the file has been changed. Use <b>Java Cryptography Architecture</b> (JCA). JCA includes solutions that are based on various cryptographic algorithms such as <b>SHA1</b>, <b>SHA256</b>, and others. Hash functions are optional, you can use a different solution.
 
 ## Objectives
-You need to work on the following commands:
+Implement the following commands:
 
-- `config` should allow the user to set their own name or output an already existing name. If a user wants to set a new name, the program must overwrite the old one.
-- `add` should allow the user to set the name of a file that they want to track or output the names of tracked files. If the file does not exist, the program should inform a user that the file does not exist.
+- `commit` must be passed to the program along with a message (see examples). Save all changes. Each commit must be assigned a unique id. if there were no changes since the last commit, do not create a new commit. You don't need to optimize the storage of changes, just copy all the staged files to the commit folder every time.
+- `log` should show all the commits in reverse order.
 
-<i>Do not create `tracked_file.txt` and `untracked_file.txt`. This is an example of the files that a user of your version control system will work with.</i>
+<i>Do not create file1.txt, file2.txt and untracked_file.txt. This is an example of the files that a user of your version control system will work with.</i>
 
 ## Examples
 The greater-than symbol followed by a space (`> `) represents the user input. Note that it's not part of the input.
 
-<b>Example 1:</b> <i>the `config` argument</i>
+<b>Example 1:</b> <i>the `log` argument</i>
 ```
-Please, tell me who you are.
+No commits yet.
 ```
-<b>Example 2:</b> <i>the `config John` argument</i>
+<i>This is the directory tree. Don't output it.</i>
 ```
-The username is John.
-```
-<b>Example 3:</b> <i>the `config` argument</i>
-```
-The username is John.
-```
-<b>Example 4:</b> <i>the `config Max` argument</i>
-```
-The username is Max.
-```
-<b>Example 5:</b> <i>the `add` argument.</i>
-```
-Add a file to the index.
-```
-<b>Example 6:</b> <i>the `add file.txt` arguments</i>
-```
-The file 'file.txt' is tracked.
-```
-<b>Example 7:</b> <i>the `add` argument</i>
-```
-Tracked files:
-file.txt
+.
+├── vcs
+│   ├── commits
+│   ├── config.txt
+│   ├── index.txt
+│   └── log.txt
+├── file1.txt
+├── file2.txt
+└── untracked_file.txt
 ```
 
-<b>Example 8:</b> <i>the `add new_file.txt` argument</i>
+<b>Example 2:</b> <i>the `commit "Added several lines of code to the file1.txt"` argument</i>
 ```
-The file 'new_file.txt' is tracked.
+Changes are committed.
+```
+<i>This is the directory tree. Don't output it.</i>
+```
+.
+├── vcs
+│   ├── commits
+│   │   └── 0b4f05fcd3e1dcc47f58fed4bb189196f99da89a
+│   │       ├── file1.txt
+│   │       └── file2.txt
+│   ├── config.txt
+│   ├── index.txt
+│   └── log.txt
+├── file1.txt
+├── file2.txt
+└── untracked_file.txt
 ```
 
-<b>Example 9:</b> <i>the `add` argument</i>
+<b>Example 3:</b> <i>the `log` argument</i>
 ```
-Tracked files:
-file.txt
-new_file.txt
+commit 0b4f05fcd3e1dcc47f58fed4bb189196f99da89a
+Author: John
+Added several lines of code to the file1.txt
 ```
 
-<b>Example 10:</b> <i>the `add not_exists_file.txt` argument</i>
+<b>Example 4:</b> <i>the `commit "Changed several lines of code in the file2.txt"` argument</i>
 ```
-Can't find 'not_exists_file.txt'.
+Changes are committed.
+
+```
+<b>Example 5:</b> <i>the `log` argument</i>
+```
+commit 2853da19f31cfc086cd5c40915253cb28d5eb01c
+Author: John
+Changed several lines of code in the file2.txt
+
+commit 0b4f05fcd3e1dcc47f58fed4bb189196f99da89a
+Author: John
+Added several lines of code to the file1.txt
+```
+
+<i>This is the directory tree. Don't output it.</i>
+```
+.
+├── vcs
+│   ├── commits
+│   │   ├── 2853da19f31cfc086cd5c40915253cb28d5eb01c
+│   │   │   ├── file1.txt
+│   │   │   └── file2.txt
+│   │   └── 0b4f05fcd3e1dcc47f58fed4bb189196f99da89a
+│   │       ├── file1.txt
+│   │       └── file2.txt
+│   ├── config.txt
+│   ├── index.txt
+│   └── log.txt
+├── file1.txt
+├── file2.txt
+└── untracked_file.txt
+```
+
+<b>Example 6:</b> <i>the `commit "Files were not changed"` argument</i>
+```
+Nothing to commit.
+```
+<b>Example 7:</b> <i>the `commit` argument</i>
+```
+Message was not passed.
 ```

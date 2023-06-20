@@ -5,8 +5,18 @@ import java.io.File
 class FileHandler {
 
     private val root = File("./vcs")
+    private val commitsPath = "/commits"
     private val configPath = "/config.txt"
     private val indexPath = "/index.txt"
+    private val logPath = "/log.txt"
+    private val serializer = Serializer()
+
+    init {
+        createRootDirectoryIfNotExists()
+        createCommitsDirectoryIfNotExists()
+    }
+
+    fun readBytes(filename: String) = File("./$filename").readBytes()
 
     fun readIndex(): String {
         return read(indexPath)
@@ -44,7 +54,40 @@ class FileHandler {
         }
     }
 
+    private fun createCommitsDirectoryIfNotExists() {
+        if (!File(root.path + commitsPath).exists()) {
+            File(root.path + commitsPath).mkdir()
+        }
+    }
+
     fun exists(filename: String): Boolean {
         return File("./$filename").exists()
     }
+
+    fun readLog(): List<Log> {
+        val log = mutableListOf<Log>()
+        if (!File(root.path + logPath).exists()) {
+            return log
+        }
+        val text = File(root.path  + logPath).readText()
+        if (text.isBlank()) {
+            return log
+        }
+        val split = text.split(Regex("#.*\\r\\n"))
+        for (serializedLog in split) {
+            if (serializedLog.isNotBlank()) {
+                log.add(serializer.deserializeLog(serializedLog))
+            }
+        }
+        return log.asReversed()
+    }
+
+    fun writeLog(log: Log) {
+        File(root.path + logPath).appendText(serializer.serializeLog(log) + "\n")
+    }
+
+    fun writeCommit(hash: String, files: List<String>) {
+        files.forEach { file -> File("./$file").copyTo(File(root.path + commitsPath + "/" + hash + "/" + file))}
+    }
+
 }
