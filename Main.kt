@@ -7,18 +7,27 @@ val fileHandler = FileHandler()
 fun main(args: Array<String>) {
 
     try {
-        when (val command = if (args.isEmpty()) Commands.HELP else Commands.getCommand(args[0])) {
+        when (if (args.isEmpty()) Commands.HELP else Commands.getCommand(args[0])) {
             Commands.HELP -> printHelp(args)
             Commands.CONFIG -> config(args)
             Commands.ADD -> add(args)
             Commands.COMMIT -> commit(args)
             Commands.LOG -> log()
-            else -> println(command.description)
+            Commands.CHECKOUT -> checkout(args)
         }
     } catch (e: RuntimeException) {
         println(e.message)
     }
 
+}
+
+fun checkout(args: Array<String>) {
+    if (args.size < 2) {
+        println("Commit id was not passed.")
+    } else {
+        val id = args[1]
+        println(if (fileHandler.restoreById(id)) "Switched to commit $id." else "Commit does not exist.")
+    }
 }
 
 fun calculateSHA256Hash(input: ByteArray): String {

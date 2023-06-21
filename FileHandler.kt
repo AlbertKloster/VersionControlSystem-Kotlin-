@@ -90,4 +90,14 @@ class FileHandler {
         files.forEach { file -> File("./$file").copyTo(File(root.path + commitsPath + "/" + hash + "/" + file))}
     }
 
+    fun restoreById(id: String): Boolean {
+        val directory = File(root.path + commitsPath + "/" + id)
+        return if (directory.exists()) {
+            directory.copyRecursively(File("./"), true)
+            true
+        } else {
+            false
+        }
+    }
+
 }
